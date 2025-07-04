@@ -54,7 +54,9 @@ const Chat = ({ apiKey, onBrowserCommand, currentUrl, onUrlChange }) => {
 
       // 브라우저 명령이 있으면 실행
       if (response.command) {
-        await executeBrowserCommand(response.command, onUrlChange)
+        console.log('Executing command:', response.command)
+        const result = await executeBrowserCommand(response.command, onUrlChange, currentUrl)
+        console.log('Command result:', result)
         onBrowserCommand(response.command)
       }
 

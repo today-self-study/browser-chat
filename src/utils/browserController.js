@@ -1,8 +1,11 @@
-export const executeBrowserCommand = async (command, onUrlChange) => {
+export const executeBrowserCommand = async (command, onUrlChange, currentUrl) => {
   try {
+    console.log('Executing browser command:', command)
+    
     switch (command.action) {
       case 'navigate':
         if (command.url) {
+          console.log('Navigating to:', command.url)
           onUrlChange(command.url)
         }
         break
@@ -10,25 +13,31 @@ export const executeBrowserCommand = async (command, onUrlChange) => {
       case 'search':
         if (command.query) {
           const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(command.query)}`
+          console.log('Searching for:', command.query, 'URL:', searchUrl)
           onUrlChange(searchUrl)
         }
         break
         
       case 'refresh':
-        // 새로고침은 BrowserViewer 컴포넌트에서 처리
-        window.location.reload()
+        // 현재 URL로 다시 이동하여 새로고침 효과
+        console.log('Refreshing current page:', currentUrl)
+        onUrlChange(currentUrl + (currentUrl.includes('?') ? '&' : '?') + 'refresh=' + Date.now())
         break
         
       case 'back':
-        // 뒤로가기는 BrowserViewer 컴포넌트에서 처리
-        window.history.back()
-        break
+        // 뒤로가기는 브라우저 히스토리를 통해 처리
+        console.log('Going back in history')
+        // 이 부분은 BrowserViewer 컴포넌트에서 처리하도록 신호 전송
+        return { action: 'back' }
         
       default:
         console.log('Unknown command:', command)
     }
+    
+    return { action: command.action, success: true }
   } catch (error) {
     console.error('Error executing browser command:', error)
+    return { action: command.action, success: false, error: error.message }
   }
 }
 

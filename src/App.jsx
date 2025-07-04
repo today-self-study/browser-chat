@@ -27,7 +27,13 @@ function App() {
 
   const handleBrowserCommand = (command) => {
     // 브라우저 명령 처리 로직은 Chat 컴포넌트에서 전달받음
-    console.log('Browser command:', command)
+    console.log('Browser command received in App:', command)
+    
+    // 뒤로가기 명령 처리
+    if (command.action === 'back') {
+      // BrowserViewer의 뒤로가기 기능 실행
+      console.log('Handling back command')
+    }
   }
 
   return (

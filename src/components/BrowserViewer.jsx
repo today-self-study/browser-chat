@@ -74,7 +74,8 @@ const BrowserViewer = ({ url, onUrlChange }) => {
   const refresh = () => {
     setIsLoading(true)
     if (iframeRef.current) {
-      iframeRef.current.src = currentUrl
+      const refreshUrl = currentUrl + (currentUrl.includes('?') ? '&' : '?') + 'refresh=' + Date.now()
+      iframeRef.current.src = refreshUrl
     }
     setTimeout(() => setIsLoading(false), 1000)
   }
