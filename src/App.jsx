@@ -46,7 +46,7 @@ function App() {
             <h1 className="text-xl font-semibold text-gray-900">Browser Chat</h1>
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-500">AI Browser Control</span>
-              <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">v1.2.0</span>
+              <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">v1.3.0</span>
             </div>
           </div>
           
@@ -82,12 +82,13 @@ function App() {
         {/* 채팅 패널 */}
         {chatVisible && (
           <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
-            <Chat 
-              apiKey={apiKey}
-              onBrowserCommand={handleBrowserCommand}
-              currentUrl={currentUrl}
-              onUrlChange={setCurrentUrl}
-            />
+                  <Chat
+        apiKey={apiKey}
+        onBrowserCommand={handleBrowserCommand}
+        currentUrl={currentUrl}
+        onUrlChange={setCurrentUrl}
+        onViewModeChange={setViewMode}
+      />
           </div>
         )}
       </div>

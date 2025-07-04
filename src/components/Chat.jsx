@@ -3,7 +3,7 @@ import { Send, Bot, User, Loader2 } from 'lucide-react'
 import { sendToOpenAI } from '../utils/openai'
 import { executeBrowserCommand } from '../utils/browserController'
 
-const Chat = ({ apiKey, onBrowserCommand, currentUrl, onUrlChange }) => {
+const Chat = ({ apiKey, onBrowserCommand, currentUrl, onUrlChange, onViewModeChange }) => {
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -55,7 +55,7 @@ const Chat = ({ apiKey, onBrowserCommand, currentUrl, onUrlChange }) => {
       // 브라우저 명령이 있으면 실행
       if (response.command) {
         console.log('Executing command:', response.command)
-        const result = await executeBrowserCommand(response.command, onUrlChange, currentUrl)
+        const result = await executeBrowserCommand(response.command, onUrlChange, currentUrl, onViewModeChange)
         console.log('Command result:', result)
         onBrowserCommand(response.command)
       }

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { RefreshCw, ArrowLeft, ArrowRight, Home, ExternalLink, AlertCircle, Globe } from 'lucide-react'
+import { RefreshCw, ArrowLeft, ArrowRight, Home, ExternalLink, AlertCircle, Globe, Camera, Monitor } from 'lucide-react'
+import { ScreenshotProxy } from '../utils/screenshotProxy'
 
 const BrowserViewer = ({ url, onUrlChange }) => {
   const [currentUrl, setCurrentUrl] = useState(url)
@@ -8,9 +9,13 @@ const BrowserViewer = ({ url, onUrlChange }) => {
   const [canGoForward, setCanGoForward] = useState(false)
   const [hasError, setHasError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [viewMode, setViewMode] = useState('iframe') // 'iframe' | 'screenshot'
+  const [screenshotUrl, setScreenshotUrl] = useState(null)
+  const [isScreenshotLoading, setIsScreenshotLoading] = useState(false)
   const iframeRef = useRef(null)
   const historyRef = useRef([url])
   const historyIndexRef = useRef(0)
+  const screenshotProxy = useRef(new ScreenshotProxy())
 
   // iframe으로 로드할 수 없는 사이트들
   const blockedSites = [
@@ -33,9 +38,12 @@ const BrowserViewer = ({ url, onUrlChange }) => {
     'github.com': 'https://github1s.com'
   }
 
+
+
   useEffect(() => {
     setCurrentUrl(url)
     setHasError(false)
+    setScreenshotUrl(null)
   }, [url])
 
   const checkIfSiteBlocked = (url) => {
@@ -47,6 +55,45 @@ const BrowserViewer = ({ url, onUrlChange }) => {
     return alternativeSites[site] || null
   }
 
+  const captureScreenshot = async (targetUrl) => {
+    setIsScreenshotLoading(true)
+    setHasError(false)
+    
+    try {
+      // 캐시된 스크린샷 확인
+      const cachedScreenshot = screenshotProxy.current.getCachedScreenshot(targetUrl)
+      if (cachedScreenshot) {
+        setScreenshotUrl(cachedScreenshot)
+        setViewMode('screenshot')
+        setIsScreenshotLoading(false)
+        return
+      }
+      
+      // 새로운 스크린샷 캡처
+      const screenshotUrl = await screenshotProxy.current.captureScreenshot(targetUrl, {
+        service: 'PagePeeker',
+        fallback: true
+      })
+      
+      if (screenshotUrl) {
+        setScreenshotUrl(screenshotUrl)
+        setViewMode('screenshot')
+        setIsScreenshotLoading(false)
+        setHasError(false)
+        
+        // 캐시에 저장
+        screenshotProxy.current.cacheScreenshot(targetUrl, screenshotUrl)
+      } else {
+        throw new Error('No screenshot URL returned')
+      }
+    } catch (error) {
+      console.error('Screenshot capture failed:', error)
+      setIsScreenshotLoading(false)
+      setHasError(true)
+      setErrorMessage(`Failed to capture screenshot: ${error.message}. Try iframe mode instead.`)
+    }
+  }
+
   const handleUrlSubmit = (e) => {
     e.preventDefault()
     navigateToUrl(currentUrl)
@@ -55,6 +102,7 @@ const BrowserViewer = ({ url, onUrlChange }) => {
   const navigateToUrl = (newUrl) => {
     setIsLoading(true)
     setHasError(false)
+    setScreenshotUrl(null)
     
     // URL 형식 정규화
     let formattedUrl = newUrl
@@ -63,7 +111,7 @@ const BrowserViewer = ({ url, onUrlChange }) => {
     }
     
     // 차단된 사이트 확인
-    if (checkIfSiteBlocked(formattedUrl)) {
+    if (checkIfSiteBlocked(formattedUrl) && viewMode === 'iframe') {
       setIsLoading(false)
       setHasError(true)
       setErrorMessage('This site cannot be loaded in iframe due to security restrictions.')
@@ -79,6 +127,11 @@ const BrowserViewer = ({ url, onUrlChange }) => {
     
     setCurrentUrl(formattedUrl)
     onUrlChange(formattedUrl)
+    
+    // 스크린샷 모드면 자동으로 캡처
+    if (viewMode === 'screenshot') {
+      captureScreenshot(formattedUrl)
+    }
     
     // 로딩 상태 관리
     setTimeout(() => setIsLoading(false), 3000)
@@ -116,10 +169,14 @@ const BrowserViewer = ({ url, onUrlChange }) => {
   const refresh = () => {
     setIsLoading(true)
     setHasError(false)
-    if (iframeRef.current) {
+    
+    if (viewMode === 'screenshot') {
+      captureScreenshot(currentUrl)
+    } else if (iframeRef.current) {
       const refreshUrl = currentUrl + (currentUrl.includes('?') ? '&' : '?') + 'refresh=' + Date.now()
       iframeRef.current.src = refreshUrl
     }
+    
     setTimeout(() => setIsLoading(false), 3000)
   }
 
@@ -134,6 +191,19 @@ const BrowserViewer = ({ url, onUrlChange }) => {
     }
   }
 
+  const switchViewMode = (mode) => {
+    setViewMode(mode)
+    setHasError(false)
+    setScreenshotUrl(null)
+    
+    if (mode === 'screenshot') {
+      captureScreenshot(currentUrl)
+    } else {
+      // iframe 모드로 다시 로드
+      navigateToUrl(currentUrl)
+    }
+  }
+
   const handleIframeLoad = () => {
     setIsLoading(false)
     setHasError(false)
@@ -143,6 +213,12 @@ const BrowserViewer = ({ url, onUrlChange }) => {
     setIsLoading(false)
     setHasError(true)
     setErrorMessage('Failed to load the website. The site may block iframe access.')
+  }
+
+  const handleScreenshotError = () => {
+    setHasError(true)
+    setErrorMessage('Failed to load screenshot. Try refreshing or switching to iframe mode.')
+    setIsScreenshotLoading(false)
   }
 
   return (
@@ -170,11 +246,11 @@ const BrowserViewer = ({ url, onUrlChange }) => {
             </button>
             <button
               onClick={refresh}
-              disabled={isLoading}
+              disabled={isLoading || isScreenshotLoading}
               className="p-2 rounded-lg hover:bg-gray-200 disabled:opacity-50 transition-colors"
               title="Refresh"
             >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${(isLoading || isScreenshotLoading) ? 'animate-spin' : ''}`} />
             </button>
           </div>
 
@@ -189,8 +265,34 @@ const BrowserViewer = ({ url, onUrlChange }) => {
             />
           </form>
 
+          {/* 뷰 모드 전환 버튼 */}
+          <div className="flex items-center space-x-1 border-l pl-2">
+            <button
+              onClick={() => switchViewMode('iframe')}
+              className={`p-2 rounded-lg transition-colors ${
+                viewMode === 'iframe' 
+                  ? 'bg-blue-100 text-blue-600' 
+                  : 'hover:bg-gray-200'
+              }`}
+              title="Iframe Mode"
+            >
+              <Monitor className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => switchViewMode('screenshot')}
+              className={`p-2 rounded-lg transition-colors ${
+                viewMode === 'screenshot' 
+                  ? 'bg-blue-100 text-blue-600' 
+                  : 'hover:bg-gray-200'
+              }`}
+              title="Screenshot Mode"
+            >
+              <Camera className="w-4 h-4" />
+            </button>
+          </div>
+
           {/* 추가 버튼 */}
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1 border-l pl-2">
             <button
               onClick={goHome}
               className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
@@ -211,11 +313,13 @@ const BrowserViewer = ({ url, onUrlChange }) => {
 
       {/* 브라우저 컨텐츠 */}
       <div className="flex-1 relative">
-        {isLoading && (
+        {(isLoading || isScreenshotLoading) && (
           <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
             <div className="flex items-center space-x-2">
               <RefreshCw className="w-5 h-5 animate-spin text-blue-600" />
-              <span className="text-gray-600">Loading...</span>
+              <span className="text-gray-600">
+                {viewMode === 'screenshot' ? 'Capturing screenshot...' : 'Loading...'}
+              </span>
             </div>
           </div>
         )}
@@ -224,15 +328,27 @@ const BrowserViewer = ({ url, onUrlChange }) => {
           <div className="flex items-center justify-center h-full bg-gray-50">
             <div className="text-center p-8 max-w-md">
               <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Access Blocked</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {viewMode === 'screenshot' ? 'Screenshot Failed' : 'Access Blocked'}
+              </h3>
               <p className="text-gray-600 mb-4">{errorMessage}</p>
               <p className="text-sm text-gray-500 mb-6">
-                Many websites block iframe access for security reasons. This includes sites like Google, YouTube, Facebook, and others.
+                {viewMode === 'iframe' 
+                  ? 'Many websites block iframe access for security reasons. Try screenshot mode or use alternatives.'
+                  : 'Screenshot capture failed. This might be due to CORS restrictions or API limitations.'
+                }
               </p>
               <div className="space-y-2">
                 <button
-                  onClick={openInNewTab}
+                  onClick={() => switchViewMode(viewMode === 'iframe' ? 'screenshot' : 'iframe')}
                   className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+                >
+                  {viewMode === 'iframe' ? <Camera className="w-4 h-4" /> : <Monitor className="w-4 h-4" />}
+                  <span>Try {viewMode === 'iframe' ? 'Screenshot' : 'Iframe'} Mode</span>
+                </button>
+                <button
+                  onClick={openInNewTab}
+                  className="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
                 >
                   <ExternalLink className="w-4 h-4" />
                   <span>Open in New Tab</span>
@@ -240,22 +356,26 @@ const BrowserViewer = ({ url, onUrlChange }) => {
                 {getAlternativeUrl(currentUrl) && (
                   <button
                     onClick={tryAlternative}
-                    className="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+                    className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2"
                   >
                     <Globe className="w-4 h-4" />
                     <span>Try Alternative</span>
                   </button>
                 )}
-                <button
-                  onClick={() => navigateToUrl('https://www.bing.com')}
-                  className="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  Go to Bing Search
-                </button>
               </div>
             </div>
           </div>
-        ) : (
+        ) : viewMode === 'screenshot' && screenshotUrl ? (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            <img
+              src={screenshotUrl}
+              alt="Website Screenshot"
+              className="max-w-full max-h-full object-contain border border-gray-300 rounded-lg shadow-lg"
+              onError={handleScreenshotError}
+              onLoad={() => setIsScreenshotLoading(false)}
+            />
+          </div>
+        ) : viewMode === 'iframe' ? (
           <iframe
             ref={iframeRef}
             src={currentUrl}
@@ -265,10 +385,17 @@ const BrowserViewer = ({ url, onUrlChange }) => {
             onLoad={handleIframeLoad}
             onError={handleIframeError}
           />
+        ) : (
+          <div className="flex items-center justify-center h-full bg-gray-50">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Content</h3>
+              <p className="text-gray-600">Enter a URL to get started</p>
+            </div>
+          </div>
         )}
       </div>
     </div>
   )
-}
-
-export default BrowserViewer 
+  }
+  
+  export default BrowserViewer 

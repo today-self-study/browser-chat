@@ -1,4 +1,4 @@
-export const executeBrowserCommand = async (command, onUrlChange, currentUrl) => {
+export const executeBrowserCommand = async (command, onUrlChange, currentUrl, onViewModeChange) => {
   try {
     console.log('Executing browser command:', command)
     
@@ -7,6 +7,12 @@ export const executeBrowserCommand = async (command, onUrlChange, currentUrl) =>
         if (command.url) {
           console.log('Navigating to:', command.url)
           onUrlChange(command.url)
+          
+          // 특정 뷰 모드가 지정된 경우
+          if (command.viewMode && onViewModeChange) {
+            console.log('Setting view mode to:', command.viewMode)
+            onViewModeChange(command.viewMode)
+          }
         }
         break
         
@@ -15,6 +21,20 @@ export const executeBrowserCommand = async (command, onUrlChange, currentUrl) =>
           const searchUrl = `https://www.bing.com/search?q=${encodeURIComponent(command.query)}`
           console.log('Searching for:', command.query, 'URL:', searchUrl)
           onUrlChange(searchUrl)
+          
+          // 검색에서도 뷰 모드 변경 가능
+          if (command.viewMode && onViewModeChange) {
+            console.log('Setting view mode to:', command.viewMode)
+            onViewModeChange(command.viewMode)
+          }
+        }
+        break
+        
+      case 'view':
+        if (command.viewMode && onViewModeChange) {
+          console.log('Switching view mode to:', command.viewMode)
+          onViewModeChange(command.viewMode)
+          return { action: 'view', viewMode: command.viewMode, success: true }
         }
         break
         

@@ -4,7 +4,7 @@
 
 A simple and intuitive web application that allows you to control your browser through natural language commands via a chat interface.
 
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/your-username/browser-chat)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/your-username/browser-chat)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![React](https://img.shields.io/badge/React-18-61dafb.svg)](https://reactjs.org/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--3.5-orange.svg)](https://openai.com/)
@@ -19,6 +19,8 @@ A simple and intuitive web application that allows you to control your browser t
 - 🌍 **Multi-language Support**: AI responds in user's preferred language
 - 🛡️ **Smart Site Blocking**: Automatic detection and handling of iframe-blocked sites
 - 🔄 **Alternative Site Suggestions**: Automatic alternatives for blocked websites
+- 📸 **Hybrid Viewing Modes**: Both iframe and screenshot-based rendering
+- 🎯 **Advanced Screenshot Capture**: Full-page screenshots with caching system
 - ⚡ **Enhanced Error Handling**: User-friendly error messages with actionable solutions
 
 ## 🚀 Demo
@@ -155,6 +157,15 @@ browser-chat/
 - Complete frontend implementation without external servers
 
 ## 🔄 Changelog
+
+### v1.3.0 (2024-01-XX)
+- **🎯 Hybrid Browser Technology**: Added screenshot-based rendering for blocked sites
+- **📸 Advanced Screenshot Capture**: Full-page screenshots with caching system
+- **🔄 Dual Viewing Modes**: Switch between iframe and screenshot modes
+- **🌐 CORS-Free Screenshot API**: Integrated multiple screenshot services
+- **⚡ Seamless Mode Switching**: AI can automatically choose best viewing mode
+- **🛡️ Enhanced Security Bypass**: Screenshot mode bypasses all iframe restrictions
+- **🎨 Improved UI Controls**: New screenshot/iframe toggle buttons
 
 ### v1.2.0 (2024-01-XX)
 - **🛡️ Enhanced Security Handling**: Smart detection and handling of iframe-blocked sites
