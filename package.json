@@ -1,0 +1,39 @@
+{
+  "name": "browser-chat",
+  "version": "1.0.0",
+  "description": "실시간 브라우저 제어를 위한 채팅 인터페이스",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && gh-pages -d dist"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "socket.io-client": "^4.7.2",
+    "lucide-react": "^0.292.0",
+    "openai": "^4.14.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.1.1",
+    "autoprefixer": "^10.4.16",
+    "gh-pages": "^6.0.0",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "vite": "^4.5.0"
+  },
+  "homepage": "https://[username].github.io/browser-chat",
+  "keywords": [
+    "browser-automation",
+    "chat-interface",
+    "openai",
+    "github-pages",
+    "websocket"
+  ],
+  "author": "",
+  "license": "MIT"
+} 
