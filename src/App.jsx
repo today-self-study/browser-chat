@@ -9,6 +9,7 @@ function App() {
   const [currentUrl, setCurrentUrl] = useState('https://www.google.com')
   const [showApiModal, setShowApiModal] = useState(false)
   const [chatVisible, setChatVisible] = useState(true)
+  const [viewMode, setViewMode] = useState('iframe')
 
   useEffect(() => {
     const savedApiKey = localStorage.getItem('openai_api_key')
@@ -76,6 +77,8 @@ function App() {
           <BrowserViewer 
             url={currentUrl} 
             onUrlChange={setCurrentUrl}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
           />
         </div>
 

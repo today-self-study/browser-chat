@@ -2,14 +2,14 @@ import React, { useState, useRef, useEffect } from 'react'
 import { RefreshCw, ArrowLeft, ArrowRight, Home, ExternalLink, AlertCircle, Globe, Camera, Monitor } from 'lucide-react'
 import { ScreenshotProxy } from '../utils/screenshotProxy'
 
-const BrowserViewer = ({ url, onUrlChange }) => {
+const BrowserViewer = ({ url, onUrlChange, viewMode: initialViewMode = 'iframe', onViewModeChange }) => {
   const [currentUrl, setCurrentUrl] = useState(url)
   const [isLoading, setIsLoading] = useState(false)
   const [canGoBack, setCanGoBack] = useState(false)
   const [canGoForward, setCanGoForward] = useState(false)
   const [hasError, setHasError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [viewMode, setViewMode] = useState('iframe') // 'iframe' | 'screenshot'
+  const [viewMode, setViewMode] = useState(initialViewMode) // 'iframe' | 'screenshot'
   const [screenshotUrl, setScreenshotUrl] = useState(null)
   const [isScreenshotLoading, setIsScreenshotLoading] = useState(false)
   const iframeRef = useRef(null)
@@ -38,13 +38,23 @@ const BrowserViewer = ({ url, onUrlChange }) => {
     'github.com': 'https://github1s.com'
   }
 
-
-
   useEffect(() => {
     setCurrentUrl(url)
     setHasError(false)
     setScreenshotUrl(null)
   }, [url])
+
+  // viewMode 변경 시 부모 컴포넌트에 알림
+  useEffect(() => {
+    if (onViewModeChange) {
+      onViewModeChange(viewMode)
+    }
+  }, [viewMode, onViewModeChange])
+
+  // initialViewMode 변경 시 로컬 상태 동기화
+  useEffect(() => {
+    setViewMode(initialViewMode)
+  }, [initialViewMode])
 
   const checkIfSiteBlocked = (url) => {
     return blockedSites.some(site => url.toLowerCase().includes(site))
@@ -195,6 +205,11 @@ const BrowserViewer = ({ url, onUrlChange }) => {
     setViewMode(mode)
     setHasError(false)
     setScreenshotUrl(null)
+    
+    // 부모 컴포넌트에 viewMode 변경 알림
+    if (onViewModeChange) {
+      onViewModeChange(mode)
+    }
     
     if (mode === 'screenshot') {
       captureScreenshot(currentUrl)
@@ -396,6 +411,6 @@ const BrowserViewer = ({ url, onUrlChange }) => {
       </div>
     </div>
   )
-  }
-  
-  export default BrowserViewer 
+}
+
+export default BrowserViewer 
