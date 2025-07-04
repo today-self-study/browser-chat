@@ -194,6 +194,21 @@ const BrowserViewer = ({ url, onUrlChange, viewMode: initialViewMode = 'iframe',
     window.open(currentUrl, '_blank')
   }
 
+  const openInNewTabWithMessage = () => {
+    const newTab = window.open(currentUrl, '_blank')
+    if (newTab) {
+      // 사용자에게 새 탭에서 상호작용 가능하다고 알림
+      console.log('Opened in new tab for direct interaction')
+    }
+  }
+
+  const handleInteractionRequest = () => {
+    // 상호작용이 필요한 경우 자동으로 새 탭 열기 제안
+    if (confirm('This action requires direct interaction with the website. Would you like to open it in a new tab?')) {
+      openInNewTabWithMessage()
+    }
+  }
+
   const tryAlternative = () => {
     const alternativeUrl = getAlternativeUrl(currentUrl)
     if (alternativeUrl) {
@@ -316,7 +331,7 @@ const BrowserViewer = ({ url, onUrlChange, viewMode: initialViewMode = 'iframe',
               <Home className="w-4 h-4" />
             </button>
             <button
-              onClick={openInNewTab}
+              onClick={handleInteractionRequest}
               className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
               title="Open in New Tab"
             >
@@ -362,7 +377,7 @@ const BrowserViewer = ({ url, onUrlChange, viewMode: initialViewMode = 'iframe',
                   <span>Try {viewMode === 'iframe' ? 'Screenshot' : 'Iframe'} Mode</span>
                 </button>
                 <button
-                  onClick={openInNewTab}
+                  onClick={handleInteractionRequest}
                   className="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
                 >
                   <ExternalLink className="w-4 h-4" />
@@ -381,14 +396,48 @@ const BrowserViewer = ({ url, onUrlChange, viewMode: initialViewMode = 'iframe',
             </div>
           </div>
         ) : viewMode === 'screenshot' && screenshotUrl ? (
-          <div className="w-full h-full flex items-center justify-center bg-gray-100">
-            <img
-              src={screenshotUrl}
-              alt="Website Screenshot"
-              className="max-w-full max-h-full object-contain border border-gray-300 rounded-lg shadow-lg"
-              onError={handleScreenshotError}
-              onLoad={() => setIsScreenshotLoading(false)}
-            />
+          <div className="w-full h-full flex flex-col bg-gray-100">
+            {/* 상호작용 안내 메시지 */}
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+              <div className="flex items-center">
+                <AlertCircle className="w-5 h-5 text-yellow-600 mr-2" />
+                <div>
+                  <p className="text-sm text-yellow-800">
+                    <strong>Screenshot Mode:</strong> You can view the website but cannot interact with it (type, click, etc.).
+                  </p>
+                  <p className="text-xs text-yellow-700 mt-1">
+                    For form input or clicking, use the "Open in New Tab" button below.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-3 flex space-x-2">
+                <button
+                  onClick={openInNewTabWithMessage}
+                  className="bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700 transition-colors flex items-center space-x-1"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  <span>Open in New Tab</span>
+                </button>
+                <button
+                  onClick={() => switchViewMode('iframe')}
+                  className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors flex items-center space-x-1"
+                >
+                  <Monitor className="w-3 h-3" />
+                  <span>Try Iframe Mode</span>
+                </button>
+              </div>
+            </div>
+            
+            {/* 스크린샷 이미지 */}
+            <div className="flex-1 flex items-center justify-center">
+              <img
+                src={screenshotUrl}
+                alt="Website Screenshot"
+                className="max-w-full max-h-full object-contain border border-gray-300 rounded-lg shadow-lg"
+                onError={handleScreenshotError}
+                onLoad={() => setIsScreenshotLoading(false)}
+              />
+            </div>
           </div>
         ) : viewMode === 'iframe' ? (
           <iframe

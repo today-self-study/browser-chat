@@ -47,7 +47,8 @@ const Chat = ({ apiKey, onBrowserCommand, currentUrl, onUrlChange, onViewModeCha
         id: Date.now() + 1,
         type: 'bot',
         content: response.message,
-        timestamp: new Date()
+        timestamp: new Date(),
+        needsInteraction: response.command?.needsInteraction || false
       }
       
       setMessages(prev => [...prev, botMessage])
@@ -100,20 +101,31 @@ const Chat = ({ apiKey, onBrowserCommand, currentUrl, onUrlChange, onViewModeCha
               className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                 message.type === 'user'
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-900'
+                  : message.needsInteraction
+                    ? 'bg-yellow-100 text-yellow-900 border border-yellow-300'
+                    : 'bg-gray-200 text-gray-900'
               }`}
             >
               <div className="flex items-start space-x-2">
                 {message.type === 'bot' && (
-                  <Bot className="w-4 h-4 mt-0.5 text-gray-600" />
+                  <Bot className={`w-4 h-4 mt-0.5 ${message.needsInteraction ? 'text-yellow-600' : 'text-gray-600'}`} />
                 )}
                 {message.type === 'user' && (
                   <User className="w-4 h-4 mt-0.5 text-white" />
                 )}
                 <div>
                   <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  {message.needsInteraction && (
+                    <div className="mt-2 p-2 bg-yellow-200 rounded text-xs">
+                      💡 <strong>Tip:</strong> Click "Open in New Tab" button in the browser viewer for direct interaction!
+                    </div>
+                  )}
                   <p className={`text-xs mt-1 ${
-                    message.type === 'user' ? 'text-blue-100' : 'text-gray-500'
+                    message.type === 'user' 
+                      ? 'text-blue-100' 
+                      : message.needsInteraction 
+                        ? 'text-yellow-600' 
+                        : 'text-gray-500'
                   }`}>
                     {message.timestamp.toLocaleTimeString()}
                   </p>

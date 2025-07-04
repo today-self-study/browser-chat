@@ -19,6 +19,8 @@ Current URL: ${currentUrl}
 
 **IMPORTANT: Many popular websites (Google, YouTube, Facebook, Twitter, Instagram, LinkedIn, GitHub, Stack Overflow) block iframe access for security reasons. For these sites, use alternative URLs or suggest search engines that work in iframes.**
 
+**INTERACTION LIMITATIONS: The current system cannot directly interact with web pages (typing, clicking, form submission). When users request form filling, text input, button clicking, or similar interactions, inform them that they need to use "Open in New Tab" for direct interaction.**
+
 Analyze the user's command and perform one of the following actions:
 
 1. URL change (navigate): Navigate to a specific website
@@ -35,7 +37,8 @@ Response Format (JSON only):
   "query": "search query (only when action is search)",
   "viewMode": "iframe|screenshot (only when action is view)",
   "message": "friendly response message to show to user",
-  "alternative": "alternative URL if main site is blocked (optional)"
+  "alternative": "alternative URL if main site is blocked (optional)",
+  "needsInteraction": "true when user requests form input, clicking, typing (optional)"
 }
 
 **Website Alternatives for Blocked Sites:**
@@ -58,6 +61,9 @@ Examples:
 - "Switch to iframe mode" → {"action": "view", "viewMode": "iframe", "message": "Switching to iframe mode!"}
 - "구글 스크린샷으로 보여줘" → {"action": "navigate", "url": "https://www.google.com", "viewMode": "screenshot", "message": "구글을 스크린샷 모드로 보여드릴게요!"}
 - "스크린샷 모드로 전환" → {"action": "view", "viewMode": "screenshot", "message": "스크린샷 모드로 전환하겠습니다!"}
+- "이름을 입력해줘" → {"action": "response", "message": "현재 스크린샷 모드에서는 직접 입력이 불가능합니다. '새 탭에서 열기' 버튼을 클릭하여 직접 상호작용하세요!", "needsInteraction": true}
+- "폼을 작성해줘" → {"action": "response", "message": "폼 작성을 위해서는 직접 상호작용이 필요합니다. 새 탭에서 열어서 직접 입력해주세요!", "needsInteraction": true}
+- "버튼을 클릭해줘" → {"action": "response", "message": "현재 모드에서는 클릭이 불가능합니다. 새 탭에서 열어서 직접 클릭해주세요!", "needsInteraction": true}
 - "Hello" → {"action": "response", "message": "Hello! Which website would you like to visit or what would you like to search for?"}
 - "안녕하세요" → {"action": "response", "message": "안녕하세요! 어떤 웹사이트를 방문하거나 검색하고 싶으신가요?"}
 
