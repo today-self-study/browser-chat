@@ -95,7 +95,7 @@ const BrowserViewer = ({ url, onUrlChange }) => {
               onClick={goBack}
               disabled={!canGoBack}
               className="p-2 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              title="뒤로 가기"
+              title="Go Back"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
@@ -103,7 +103,7 @@ const BrowserViewer = ({ url, onUrlChange }) => {
               onClick={goForward}
               disabled={!canGoForward}
               className="p-2 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              title="앞으로 가기"
+              title="Go Forward"
             >
               <ArrowRight className="w-4 h-4" />
             </button>
@@ -111,7 +111,7 @@ const BrowserViewer = ({ url, onUrlChange }) => {
               onClick={refresh}
               disabled={isLoading}
               className="p-2 rounded-lg hover:bg-gray-200 disabled:opacity-50 transition-colors"
-              title="새로고침"
+              title="Refresh"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             </button>
@@ -124,7 +124,7 @@ const BrowserViewer = ({ url, onUrlChange }) => {
               value={currentUrl}
               onChange={(e) => setCurrentUrl(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="웹사이트 주소를 입력하세요..."
+              placeholder="Enter website URL..."
             />
           </form>
 
@@ -133,14 +133,14 @@ const BrowserViewer = ({ url, onUrlChange }) => {
             <button
               onClick={goHome}
               className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
-              title="홈으로 가기"
+              title="Go Home"
             >
               <Home className="w-4 h-4" />
             </button>
             <button
               onClick={openInNewTab}
               className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
-              title="새 탭에서 열기"
+              title="Open in New Tab"
             >
               <ExternalLink className="w-4 h-4" />
             </button>
@@ -154,7 +154,7 @@ const BrowserViewer = ({ url, onUrlChange }) => {
           <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
             <div className="flex items-center space-x-2">
               <RefreshCw className="w-5 h-5 animate-spin text-blue-600" />
-              <span className="text-gray-600">로딩 중...</span>
+              <span className="text-gray-600">Loading...</span>
             </div>
           </div>
         )}

@@ -44,21 +44,24 @@ function App() {
           <div className="flex items-center space-x-3">
             <Monitor className="w-6 h-6 text-blue-600" />
             <h1 className="text-xl font-semibold text-gray-900">Browser Chat</h1>
-            <span className="text-sm text-gray-500">AI 브라우저 제어</span>
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-500">AI Browser Control</span>
+              <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">v1.1.0</span>
+            </div>
           </div>
           
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setChatVisible(!chatVisible)}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              title="채팅 토글"
+              title="Toggle Chat"
             >
               <MessageCircle className="w-5 h-5 text-gray-600" />
             </button>
             <button
               onClick={() => setShowApiModal(true)}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              title="설정"
+              title="Settings"
             >
               <Settings className="w-5 h-5 text-gray-600" />
             </button>

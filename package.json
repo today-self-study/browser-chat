@@ -1,7 +1,7 @@
 {
   "name": "browser-chat",
-  "version": "1.0.0",
-  "description": "실시간 브라우저 제어를 위한 채팅 인터페이스",
+  "version": "1.1.0",
+  "description": "AI-powered browser control through natural language chat interface",
   "type": "module",
   "scripts": {
     "dev": "vite",

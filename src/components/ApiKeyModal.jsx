@@ -10,12 +10,12 @@ const ApiKeyModal = ({ onApiKeySet, onClose, existingKey }) => {
     e.preventDefault()
     
     if (!apiKey.trim()) {
-      setError('API 키를 입력해주세요.')
+      setError('Please enter your API key.')
       return
     }
     
     if (!apiKey.startsWith('sk-')) {
-      setError('유효한 OpenAI API 키를 입력해주세요. (sk-로 시작)')
+      setError('Please enter a valid OpenAI API key. (starts with sk-)')
       return
     }
     
@@ -40,7 +40,7 @@ const ApiKeyModal = ({ onApiKeySet, onClose, existingKey }) => {
             <div className="p-2 bg-blue-100 rounded-lg">
               <Key className="w-5 h-5 text-blue-600" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">OpenAI API 키 설정</h2>
+            <h2 className="text-xl font-semibold text-gray-900">OpenAI API Key Setup</h2>
           </div>
           <button
             onClick={onClose}
@@ -54,25 +54,25 @@ const ApiKeyModal = ({ onApiKeySet, onClose, existingKey }) => {
         <form onSubmit={handleSubmit} className="p-6">
           <div className="mb-4">
             <p className="text-sm text-gray-600 mb-4">
-              AI 어시스턴트를 사용하려면 OpenAI API 키가 필요합니다.
+              An OpenAI API key is required to use the AI assistant.
             </p>
             
             <div className="mb-4 p-4 bg-blue-50 rounded-lg">
               <div className="flex items-start space-x-2">
                 <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">API 키 발급 방법:</p>
+                  <p className="font-medium mb-1">How to get API key:</p>
                   <ol className="list-decimal list-inside space-y-1 text-blue-700">
-                    <li>OpenAI 웹사이트에서 계정 생성</li>
-                    <li>API 키 발급 (유료 계정 필요)</li>
-                    <li>발급받은 키를 아래에 입력</li>
+                    <li>Create account on OpenAI website</li>
+                    <li>Generate API key (paid account required)</li>
+                    <li>Enter your key below</li>
                   </ol>
                 </div>
               </div>
             </div>
 
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              OpenAI API 키
+              OpenAI API Key
             </label>
             <div className="relative">
               <input
@@ -105,7 +105,7 @@ const ApiKeyModal = ({ onApiKeySet, onClose, existingKey }) => {
 
           <div className="mb-4 p-3 bg-gray-50 rounded-lg">
             <p className="text-xs text-gray-600">
-              <strong>보안 안내:</strong> API 키는 브라우저에만 저장되며, 외부로 전송되지 않습니다.
+              <strong>Security Notice:</strong> API key is stored only in your browser and is not transmitted externally.
             </p>
           </div>
 
@@ -116,13 +116,13 @@ const ApiKeyModal = ({ onApiKeySet, onClose, existingKey }) => {
               onClick={onClose}
               className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
             >
-              취소
+              Cancel
             </button>
             <button
               type="submit"
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              저장
+              Save
             </button>
           </div>
         </form>
