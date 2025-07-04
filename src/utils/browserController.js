@@ -12,7 +12,7 @@ export const executeBrowserCommand = async (command, onUrlChange, currentUrl) =>
         
       case 'search':
         if (command.query) {
-          const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(command.query)}`
+          const searchUrl = `https://www.bing.com/search?q=${encodeURIComponent(command.query)}`
           console.log('Searching for:', command.query, 'URL:', searchUrl)
           onUrlChange(searchUrl)
         }
@@ -44,29 +44,29 @@ export const executeBrowserCommand = async (command, onUrlChange, currentUrl) =>
 export const getPopularUrls = () => {
   return [
     {
-      name: '구글',
-      url: 'https://www.google.com',
+      name: 'Bing Search',
+      url: 'https://www.bing.com',
       icon: '🔍'
     },
     {
-      name: '유튜브',
-      url: 'https://www.youtube.com',
-      icon: '📺'
+      name: 'DuckDuckGo',
+      url: 'https://duckduckgo.com',
+      icon: '🦆'
     },
     {
-      name: '네이버',
-      url: 'https://www.naver.com',
-      icon: '🌐'
-    },
-    {
-      name: '깃허브',
-      url: 'https://github.com',
-      icon: '💻'
-    },
-    {
-      name: '위키피디아',
+      name: 'Wikipedia',
       url: 'https://wikipedia.org',
       icon: '📚'
+    },
+    {
+      name: 'BBC News',
+      url: 'https://www.bbc.com',
+      icon: '📰'
+    },
+    {
+      name: 'Stack Overflow',
+      url: 'https://stackoverflow.com',
+      icon: '💻'
     }
   ]
 }
@@ -102,24 +102,24 @@ export const isValidUrl = (url) => {
 export const getSuggestedCommands = () => {
   return [
     {
-      text: '구글로 가줘',
-      description: '구글 홈페이지로 이동'
+      text: 'Go to Bing',
+      description: 'Navigate to Bing search engine'
     },
     {
-      text: '파이썬 검색해줘',
-      description: '파이썬 관련 검색'
+      text: 'Search for Python',
+      description: 'Search for Python programming'
     },
     {
-      text: '유튜브 열어줘',
-      description: '유튜브 사이트로 이동'
+      text: 'Open Wikipedia',
+      description: 'Navigate to Wikipedia'
     },
     {
-      text: '새로고침해줘',
-      description: '현재 페이지 새로고침'
+      text: 'Refresh page',
+      description: 'Refresh current page'
     },
     {
-      text: '뒤로가기',
-      description: '이전 페이지로 이동'
+      text: 'Go back',
+      description: 'Go to previous page'
     }
   ]
 } 

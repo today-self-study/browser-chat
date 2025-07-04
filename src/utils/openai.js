@@ -17,6 +17,8 @@ Current URL: ${currentUrl}
 
 **Language Response Rule: Always respond in the same language as the user's input. If the user types in Korean, respond in Korean. If in English, respond in English. If in Japanese, respond in Japanese, etc.**
 
+**IMPORTANT: Many popular websites (Google, YouTube, Facebook, Twitter, Instagram, LinkedIn, GitHub, Stack Overflow) block iframe access for security reasons. For these sites, use alternative URLs or suggest search engines that work in iframes.**
+
 Analyze the user's command and perform one of the following actions:
 
 1. URL change (navigate): Navigate to a specific website
@@ -30,22 +32,32 @@ Response Format (JSON only):
   "action": "navigate|search|refresh|back|response",
   "url": "actual URL (only when action is navigate or search)",
   "query": "search query (only when action is search)",
-  "message": "friendly response message to show to user"
+  "message": "friendly response message to show to user",
+  "alternative": "alternative URL if main site is blocked (optional)"
 }
 
+**Website Alternatives for Blocked Sites:**
+- Google → Use Bing (https://www.bing.com) or DuckDuckGo (https://duckduckgo.com)
+- YouTube → Use Invidious (https://invidious.io) or suggest search instead
+- GitHub → Use GitHub1s (https://github1s.com) for viewing code
+- Twitter → Use Nitter (https://nitter.net)
+- Instagram → Use Picuki (https://picuki.com)
+- For search: Use Bing or DuckDuckGo instead of Google
+
 Examples:
-- "Go to Google" → {"action": "navigate", "url": "https://www.google.com", "message": "Going to Google!"}
-- "Search for Python" → {"action": "search", "query": "Python", "url": "https://www.google.com/search?q=Python", "message": "Searching for Python!"}
-- "구글로 가줘" → {"action": "navigate", "url": "https://www.google.com", "message": "구글로 이동하겠습니다!"}
-- "파이썬 검색해줘" → {"action": "search", "query": "파이썬", "url": "https://www.google.com/search?q=파이썬", "message": "파이썬을 검색하겠습니다!"}
-- "YouTube 열어줘" → {"action": "navigate", "url": "https://www.youtube.com", "message": "YouTube로 이동하겠습니다!"}
+- "Go to Google" → {"action": "navigate", "url": "https://www.bing.com", "message": "Google blocks iframe access, so I'm taking you to Bing instead!", "alternative": "https://duckduckgo.com"}
+- "Search for Python" → {"action": "search", "query": "Python", "url": "https://www.bing.com/search?q=Python", "message": "Searching for Python on Bing!"}
+- "구글로 가줘" → {"action": "navigate", "url": "https://www.bing.com", "message": "구글은 iframe 접근을 차단하므로 Bing으로 이동하겠습니다!", "alternative": "https://duckduckgo.com"}
+- "파이썬 검색해줘" → {"action": "search", "query": "파이썬", "url": "https://www.bing.com/search?q=파이썬", "message": "Bing에서 파이썬을 검색하겠습니다!"}
+- "YouTube 열어줘" → {"action": "navigate", "url": "https://invidious.io", "message": "YouTube는 iframe을 차단하므로 대안 서비스로 이동하겠습니다!", "alternative": "https://www.youtube.com"}
 - "Refresh the page" → {"action": "refresh", "message": "Refreshing the page!"}
 - "뒤로가기" → {"action": "back", "message": "이전 페이지로 이동하겠습니다!"}
 - "Hello" → {"action": "response", "message": "Hello! Which website would you like to visit or what would you like to search for?"}
 - "안녕하세요" → {"action": "response", "message": "안녕하세요! 어떤 웹사이트를 방문하거나 검색하고 싶으신가요?"}
 
-Recognize major website names (Google, YouTube, GitHub, Wikipedia, Naver, Daum, etc.) and generate navigation commands to their URLs.
-For commands containing search terms, automatically generate Google search URLs.
+Recognize major website names and provide iframe-friendly alternatives.
+For search commands, use Bing or DuckDuckGo instead of Google.
+Always inform users when using alternatives due to iframe restrictions.
 `
 
     const response = await openai.chat.completions.create({

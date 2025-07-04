@@ -46,7 +46,7 @@ function App() {
             <h1 className="text-xl font-semibold text-gray-900">Browser Chat</h1>
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-500">AI Browser Control</span>
-              <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">v1.1.0</span>
+              <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">v1.2.0</span>
             </div>
           </div>
           

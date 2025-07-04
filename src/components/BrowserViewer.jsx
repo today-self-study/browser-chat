@@ -1,18 +1,51 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { RefreshCw, ArrowLeft, ArrowRight, Home, ExternalLink } from 'lucide-react'
+import { RefreshCw, ArrowLeft, ArrowRight, Home, ExternalLink, AlertCircle, Globe } from 'lucide-react'
 
 const BrowserViewer = ({ url, onUrlChange }) => {
   const [currentUrl, setCurrentUrl] = useState(url)
   const [isLoading, setIsLoading] = useState(false)
   const [canGoBack, setCanGoBack] = useState(false)
   const [canGoForward, setCanGoForward] = useState(false)
+  const [hasError, setHasError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const iframeRef = useRef(null)
   const historyRef = useRef([url])
   const historyIndexRef = useRef(0)
 
+  // iframe으로 로드할 수 없는 사이트들
+  const blockedSites = [
+    'google.com',
+    'youtube.com',
+    'facebook.com',
+    'twitter.com',
+    'instagram.com',
+    'linkedin.com',
+    'github.com',
+    'stackoverflow.com'
+  ]
+
+  // iframe 친화적인 대안 사이트들
+  const alternativeSites = {
+    'google.com': 'https://duckduckgo.com',
+    'youtube.com': 'https://invidious.io',
+    'twitter.com': 'https://nitter.net',
+    'instagram.com': 'https://picuki.com',
+    'github.com': 'https://github1s.com'
+  }
+
   useEffect(() => {
     setCurrentUrl(url)
+    setHasError(false)
   }, [url])
+
+  const checkIfSiteBlocked = (url) => {
+    return blockedSites.some(site => url.toLowerCase().includes(site))
+  }
+
+  const getAlternativeUrl = (url) => {
+    const site = blockedSites.find(site => url.toLowerCase().includes(site))
+    return alternativeSites[site] || null
+  }
 
   const handleUrlSubmit = (e) => {
     e.preventDefault()
@@ -21,11 +54,20 @@ const BrowserViewer = ({ url, onUrlChange }) => {
 
   const navigateToUrl = (newUrl) => {
     setIsLoading(true)
+    setHasError(false)
     
     // URL 형식 정규화
     let formattedUrl = newUrl
     if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
       formattedUrl = 'https://' + formattedUrl
+    }
+    
+    // 차단된 사이트 확인
+    if (checkIfSiteBlocked(formattedUrl)) {
+      setIsLoading(false)
+      setHasError(true)
+      setErrorMessage('This site cannot be loaded in iframe due to security restrictions.')
+      return
     }
     
     // 히스토리 업데이트
@@ -39,7 +81,7 @@ const BrowserViewer = ({ url, onUrlChange }) => {
     onUrlChange(formattedUrl)
     
     // 로딩 상태 관리
-    setTimeout(() => setIsLoading(false), 1000)
+    setTimeout(() => setIsLoading(false), 3000)
   }
 
   const updateNavigationButtons = () => {
@@ -68,20 +110,39 @@ const BrowserViewer = ({ url, onUrlChange }) => {
   }
 
   const goHome = () => {
-    navigateToUrl('https://www.google.com')
+    navigateToUrl('https://www.bing.com')
   }
 
   const refresh = () => {
     setIsLoading(true)
+    setHasError(false)
     if (iframeRef.current) {
       const refreshUrl = currentUrl + (currentUrl.includes('?') ? '&' : '?') + 'refresh=' + Date.now()
       iframeRef.current.src = refreshUrl
     }
-    setTimeout(() => setIsLoading(false), 1000)
+    setTimeout(() => setIsLoading(false), 3000)
   }
 
   const openInNewTab = () => {
     window.open(currentUrl, '_blank')
+  }
+
+  const tryAlternative = () => {
+    const alternativeUrl = getAlternativeUrl(currentUrl)
+    if (alternativeUrl) {
+      navigateToUrl(alternativeUrl)
+    }
+  }
+
+  const handleIframeLoad = () => {
+    setIsLoading(false)
+    setHasError(false)
+  }
+
+  const handleIframeError = () => {
+    setIsLoading(false)
+    setHasError(true)
+    setErrorMessage('Failed to load the website. The site may block iframe access.')
   }
 
   return (
@@ -159,14 +220,52 @@ const BrowserViewer = ({ url, onUrlChange }) => {
           </div>
         )}
         
-        <iframe
-          ref={iframeRef}
-          src={currentUrl}
-          className="w-full h-full border-0"
-          title="Browser Viewer"
-          sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-          onLoad={() => setIsLoading(false)}
-        />
+        {hasError ? (
+          <div className="flex items-center justify-center h-full bg-gray-50">
+            <div className="text-center p-8 max-w-md">
+              <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Access Blocked</h3>
+              <p className="text-gray-600 mb-4">{errorMessage}</p>
+              <p className="text-sm text-gray-500 mb-6">
+                Many websites block iframe access for security reasons. This includes sites like Google, YouTube, Facebook, and others.
+              </p>
+              <div className="space-y-2">
+                <button
+                  onClick={openInNewTab}
+                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>Open in New Tab</span>
+                </button>
+                {getAlternativeUrl(currentUrl) && (
+                  <button
+                    onClick={tryAlternative}
+                    className="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <Globe className="w-4 h-4" />
+                    <span>Try Alternative</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => navigateToUrl('https://www.bing.com')}
+                  className="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Go to Bing Search
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <iframe
+            ref={iframeRef}
+            src={currentUrl}
+            className="w-full h-full border-0"
+            title="Browser Viewer"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"
+            onLoad={handleIframeLoad}
+            onError={handleIframeError}
+          />
+        )}
       </div>
     </div>
   )

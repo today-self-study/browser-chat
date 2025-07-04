@@ -4,7 +4,7 @@
 
 A simple and intuitive web application that allows you to control your browser through natural language commands via a chat interface.
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/your-username/browser-chat)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/your-username/browser-chat)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![React](https://img.shields.io/badge/React-18-61dafb.svg)](https://reactjs.org/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--3.5-orange.svg)](https://openai.com/)
@@ -17,6 +17,9 @@ A simple and intuitive web application that allows you to control your browser t
 - 🔒 **Secure API Key Management**: Local storage-based secure storage
 - 📱 **Responsive Design**: Perfect user experience on all devices
 - 🌍 **Multi-language Support**: AI responds in user's preferred language
+- 🛡️ **Smart Site Blocking**: Automatic detection and handling of iframe-blocked sites
+- 🔄 **Alternative Site Suggestions**: Automatic alternatives for blocked websites
+- ⚡ **Enhanced Error Handling**: User-friendly error messages with actionable solutions
 
 ## 🚀 Demo
 
@@ -152,6 +155,14 @@ browser-chat/
 - Complete frontend implementation without external servers
 
 ## 🔄 Changelog
+
+### v1.2.0 (2024-01-XX)
+- **🛡️ Enhanced Security Handling**: Smart detection and handling of iframe-blocked sites
+- **🔄 Alternative Site Suggestions**: Automatic alternatives for blocked websites (Google→Bing, YouTube→Invidious)
+- **📊 Improved Error UI**: User-friendly error messages with actionable solutions
+- **🌐 Updated Default Search**: Changed from Google to Bing for better iframe compatibility
+- **⚡ Better User Experience**: Clear explanations when sites can't be loaded
+- **🎯 Smart Site Detection**: Pre-emptive blocking of known problematic sites
 
 ### v1.1.0 (2024-01-XX)
 - **Complete OpenAI API Integration**: All command processing handled by AI
